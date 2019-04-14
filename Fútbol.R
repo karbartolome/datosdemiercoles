@@ -1,13 +1,13 @@
-#librerías
+#Librerías
 library(readr)
 library(ggplot2)
 library(gganimate)
 library(tidyverse)
 
-#datos
+#Datos
 conjunto_datos <- readr::read_delim("https://raw.githubusercontent.com/cienciadedatos/datos-de-miercoles/master/datos/2019/2019-04-10/partidos.txt",delim = "\t")
 
-#cantidad de goles por equipo por año
+#Cantidad de goles por equipo por año
 datos<- conjunto_datos %>% 
   group_by(equipo_1, anio) %>% 
   summarise(goles=sum(equipo_1_final))
@@ -22,14 +22,14 @@ goles$total <- goles$goles.x+goles$goles.y
 
 goles <- goles %>% select(anio=anio.x, equipo=equipo_1, total)
 
-#dataframe de méximos goleadores por año
+#Máximos goleadores por año
 maxgoleadores <- goles %>%
       group_by(anio) %>%
       arrange(desc(total)) %>%
       slice(1:1) %>%    #si se modifica el 1:1 por 1:5 serían los 5 con máx cantidad de goles
       select(equipo, total, anio)
 
-#genero una animación de un ggplot
+#Ggplot animado
 anim <- ggplot(maxgoleadores, aes(x=total, y=anio, color=equipo)) +
   geom_point(size=4)+
   geom_text(aes(label=paste(equipo,total), hjust=-0.2))+
@@ -41,7 +41,7 @@ anim <- ggplot(maxgoleadores, aes(x=total, y=anio, color=equipo)) +
   transition_states(anio, transition_length=0.5, state_length = 0.5)+
   shadow_mark()
 
-#ver y guardar el gif
+#Ver y guardar gif
 animate(anim)
 anim_save("anim.gif", animation = anim)
 
