@@ -1,4 +1,4 @@
-#librerÌas
+#librer√≠as
 library(readr)
 library(ggplot2)
 library(gganimate)
@@ -7,7 +7,7 @@ library(tidyverse)
 #datos
 conjunto_datos <- readr::read_delim("https://raw.githubusercontent.com/cienciadedatos/datos-de-miercoles/master/datos/2019/2019-04-10/partidos.txt",delim = "\t")
 
-#cantidad de goles por equipo por aÒo
+#cantidad de goles por equipo por a√±o
 datos<- conjunto_datos %>% 
   group_by(equipo_1, anio) %>% 
   summarise(goles=sum(equipo_1_final))
@@ -22,28 +22,27 @@ goles$total <- goles$goles.x+goles$goles.y
 
 goles <- goles %>% select(anio=anio.x, equipo=equipo_1, total)
 
-#dataframe de mÈximos goleadores por aÒo
+#dataframe de m√©ximos goleadores por a√±o
 maxgoleadores <- goles %>%
       group_by(anio) %>%
       arrange(desc(total)) %>%
-      slice(1:1) %>%    #si se modifica el 1:1 por 1:5 serÌan los 5 con m·x cantidad de goles
+      slice(1:1) %>%    #si se modifica el 1:1 por 1:5 ser√≠an los 5 con m√°x cantidad de goles
       select(equipo, total, anio)
 
-#genero una animaciÛn de un ggplot
+#genero una animaci√≥n de un ggplot
 anim <- ggplot(maxgoleadores, aes(x=total, y=anio, color=equipo)) +
   geom_point(size=4)+
   geom_text(aes(label=paste(equipo,total), hjust=-0.2))+
   scale_x_continuous(limits = c(min(0),max(maxgoleadores$total)+6))+
-  labs(title="PaÌses con mayor cantidad de goles por aÒo", 
+  labs(title="Pa√≠ses con mayor cantidad de goles por a√±o", 
        x="Cantidad de goles", 
-       y="AÒo",
-       caption = "Datos de MiÈrcoles")+
+       y="A√±o",
+       caption = "Datos de Mi√©rcoles")+
   transition_states(anio, transition_length=0.5, state_length = 0.5)+
   shadow_mark()
 
 #ver y guardar el gif
 animate(anim)
-setwd("C:/Users/karin/Documents/Rstudio/Datos de MiÈrcoles")
 anim_save("anim.gif", animation = anim)
 
 
