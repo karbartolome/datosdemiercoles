@@ -1,24 +1,22 @@
-#Librerías
-library(esquisse)
+#LibrerÃ­as
 library(tidyverse)
 library(gganimate)
 
-#Datos de miércoles - Gapminder
+#Datos de miÃ©rcoles - Gapminder
 gapminder <-
   readr::read_csv(
     "https://raw.githubusercontent.com/cienciadedatos/datos-de-miercoles/master/datos/2019/2019-04-24/gapminder_es.csv"
   )
 gapminder$poblacion_en_millones <- gapminder$poblacion / 1000000
-gapminder$pbi_percap <- round(gapminder$pbi_per_capita, digits = 1)
 
-#Datos de miércoles - Mundiales
+#Datos de miÃ©rcoles - Mundiales
 mundiales <-
   readr::read_delim(
     "https://raw.githubusercontent.com/cienciadedatos/datos-de-miercoles/master/datos/2019/2019-04-10/partidos.txt",
     delim = "\t"
   )
 
-##cantidad de goles por equipo por año
+##cantidad de goles por equipo por aÃ±o
 datos1 <- mundiales %>%
   group_by(equipo_1, anio) %>%
   summarise(goles = sum(equipo_1_final))
@@ -32,22 +30,22 @@ goles <- merge(datos1, datos2, by = "eq_anio")
 goles$total <- goles$goles.x + goles$goles.y
 goles <- goles %>% select(anio = anio.x, pais = equipo_1, total)
 
-#Países que participaron de mundiales
+#PaÃ­ses que participaron de mundiales
 participantes <-
-  data.frame(pais = unique(goles$pais), participo = "participó")
+  data.frame(pais = unique(goles$pais), participo = "participÃ³")
 
-#Añado la información de participación de mundiales a Gapminder
+#AÃ±ado la informaciÃ³n de participaciÃ³n de mundiales a Gapminder
 gapminder_participantes<-merge(gapminder,participantes,by="pais",all.x=TRUE)
 gapminder_participantes <- gapminder_participantes %>% mutate(
   Mundiales = if_else(
     is.na(gapminder_participantes$participo),
-    "No participó", 
-    "Participó"))
+    "No participÃ³", 
+    "ParticipÃ³"))
 
 options(scipen=999)
 
-##Expectativa de vida y PBI per cápita - Evolución
-#Población y participación en mundiales
+##Expectativa de vida y PBI per cÃ¡pita - EvoluciÃ³n
+#PoblaciÃ³n y participaciÃ³n en mundiales
 anim <- ggplot(
   data = gapminder_participantes,
   aes(
@@ -55,22 +53,22 @@ anim <- ggplot(
     y = esperanza_de_vida,
     size = poblacion_en_millones,
     color = Mundiales
-    )
-  ) +
+  )
+) +
   geom_point() +
   scale_x_log10() +
-  scale_colour_manual(values = c("No participó" = "firebrick4", "Participó" =
-                                   "deepskyblue4")) +
+  scale_colour_manual(values = c("No participÃ³" = "darkorange", "ParticipÃ³" =
+                                   "green")) +
   labs(
-    title = "PBI per cápita y expectativa de vida a lo largo del tiempo",
+    title = "PBI per cÃ¡pita y expectativa de vida a lo largo del tiempo",
     subtitle = "{closest_state}",
-    x = "PBI per cápita (Log)",
+    x = "PBI per cÃ¡pita (Log)",
     y = "Expectativa de vida",
-    caption = "Datos de Miércoles, RstatsES",
+    caption = "Datos de MiÃ©rcoles, RstatsES",
     color = "Mundiales",
-    size = "Población"
+    size = "PoblaciÃ³n"
   ) +
-  theme_gray() +
+  theme_dark() +
   theme(
     legend.title = element_text(hjust = 1),
     legend.text = element_text(hjust = 0.5),
@@ -83,9 +81,10 @@ anim <- ggplot(
     )
   ) +
   facet_wrap(vars(continente), nrow = 1)+
-  transition_states(anio)
-#Genero la animación
+  transition_states(anio)+
+  shadow_trail(alpha = 0.3, shape = 2)
+#Genero la animaciÃ³n
 animate(anim, duration = 4)
 
-#Guardo la animación
+#Guardo la animaciÃ³n
 anim_save("Gapminder.gif",animation = last_animation())
