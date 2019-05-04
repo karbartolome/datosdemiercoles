@@ -3,6 +3,8 @@
 # Extensión de: https://gitlab.com/gavg712/datos_de_miercoles_aportes/blob/master/R/20190501.R 
 # De @gavg712 
 #______________________________________________________________________________________________
+# % exportado por país y países hispanoaméricanos
+
 # porcentaje exportado
 a <- aggregate(exportado ~ codigo_iso_origen+anio, 
   data=comercio_centroid,
@@ -14,36 +16,41 @@ comercio_centroid$porcentaje_expo <-(comercio_centroid$exportado.x / comercio_ce
 
 #Países hispanoaméricanos
 comercio_centroid <- comercio_centroid %>% mutate(
-  hispanos = if_else(codigo_iso_destino %in% codigo_iso_origen, "Hispanoamérica", "Otros")
+  hispanos = if_else(codigo_iso_destino %in% codigo_iso_origen, "Hispanos", "Otros")
 )
 
 #Subset ARG
 comercio_centroid_arg<-subset(comercio_centroid, comercio_centroid$codigo_iso_origen=="ARG")
 
-summary(comercio_centroid_arg$porcentaje_expo)
+aggregate(comercio_centroid_arg$porcentaje_expo ~ anio,
+          data=comercio_centroid_arg, 
+          FUN = "sum")
+
 
 comercio_centroid_arg <-
   comercio_centroid_arg %>% mutate(porcentaje_expo2 = if_else(
-    porcentaje_expo <= 0.01,
-    "< 1%",
+    porcentaje_expo <= 1,
+    "<1%",
     if_else(
-      porcentaje_expo > 0.01 &
-        porcentaje_expo <= 0.1,
-      "1 - 10 %",
+      porcentaje_expo > 1 &
+        porcentaje_expo <= 5,
+      "1-5%",
       if_else(
-        porcentaje_expo > 0.1 & porcentaje_expo <= 0.25,
-        "10 - 25%",
-        if_else(porcentaje_expo > 0.2, ">25%", "no")
+        porcentaje_expo > 5 & porcentaje_expo <= 10,
+        "5-10%",
+        if_else(porcentaje_expo > 10, ">10%", "no")
       )
     )
   ))
 
 #animación
 anim<-ggplot() +
-    geom_sf(data = paises, fill = "black", color = "grey50", size = .15) +
+    geom_sf(data = paises, fill = "black", color = "grey", size = .15) +
   geom_line(data = comercio_centroid_arg, aes(orig_lon, orig_lat),
             size = 0.5) +
-  geom_point(data = comercio_centroid_arg, aes(dest_lon, dest_lat, color=porcentaje_expo2, size=2))+
+  geom_point(data = comercio_centroid_arg, aes(dest_lon, dest_lat, 
+                                               color=porcentaje_expo2, 
+                                               size=2))+
   geom_curve(data = comercio_centroid_arg, 
              aes(x = orig_lon, y = orig_lat, 
                  xend = dest_lon, yend = dest_lat,
@@ -51,6 +58,9 @@ anim<-ggplot() +
                  ), alpha=0.25, show.legend = TRUE)+
   coord_sf(crs = st_crs(paises)) +
   scale_fill_distiller(palette = "RdYlGn")+
+  scale_colour_manual(name="",  
+                      values = c("<1%"="grey", "1-5%"="seagreen1", "5-10%"="slateblue2",
+                                 ">10%"="red", "Hispanos"="magenta2", "Otros" ="steelblue3"))+
   guides(color = guide_legend(nrow = 2), size = FALSE) +
   theme(axis.text = element_blank(),
         axis.title = element_blank(),
@@ -61,11 +71,11 @@ anim<-ggplot() +
         panel.background = element_rect(fill = "white")) +
   labs(title = 'Exportaciones de Argentina al mundo',
        subtitle = 'Exportaciones en el Año: {current_frame}',
-       caption = "#DatosdeMiercoles")+
+       caption = "#DatosdeMiercoles", 
+       color="Porcentaje de expo totales")+
     transition_manual(anio) +
     enter_fade()+
     exit_fade()
 
 anim_save("relaciones_comerciales_exportaciones.gif", animation = anim, fps = 20, 
           width = 800, height = 550)
-
