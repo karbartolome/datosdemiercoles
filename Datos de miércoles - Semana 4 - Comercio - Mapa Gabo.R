@@ -1,5 +1,8 @@
-# % exportado por paÌs y paÌses hispanoamÈricanos
-
+# % exportado por pa√≠s y pa√≠ses hispanoam√©ricanos
+#______________________________________________________________________________________________
+# Extensi√≥n de: https://gitlab.com/gavg712/datos_de_miercoles_aportes/blob/master/R/20190501.R 
+# De @gavg712 
+#______________________________________________________________________________________________
 # porcentaje exportado
 a <- aggregate(exportado ~ codigo_iso_origen+anio, 
   data=comercio_centroid,
@@ -9,9 +12,9 @@ comercio_centroid <-  merge(comercio_centroid, a, by = c("codigo_iso_origen", "a
 
 comercio_centroid$porcentaje_expo <-(comercio_centroid$exportado.x / comercio_centroid$exportado.y)*100
 
-#PaÌses hispanoamÈricanos
+#Pa√≠ses hispanoam√©ricanos
 comercio_centroid <- comercio_centroid %>% mutate(
-  hispanos = if_else(codigo_iso_destino %in% codigo_iso_origen, "HispanoamÈrica", "Otros")
+  hispanos = if_else(codigo_iso_destino %in% codigo_iso_origen, "Hispanoam√©rica", "Otros")
 )
 
 #Subset ARG
@@ -35,7 +38,7 @@ comercio_centroid_arg <-
     )
   ))
 
-#animaciÛn
+#animaci√≥n
 anim<-ggplot() +
     geom_sf(data = paises, fill = "black", color = "grey50", size = .15) +
   geom_line(data = comercio_centroid_arg, aes(orig_lon, orig_lat),
@@ -57,7 +60,7 @@ anim<-ggplot() +
         legend.key = element_rect(fill = NA, color = NA),
         panel.background = element_rect(fill = "white")) +
   labs(title = 'Exportaciones de Argentina al mundo',
-       subtitle = 'Exportaciones en el AÒo: {current_frame}',
+       subtitle = 'Exportaciones en el A√±o: {current_frame}',
        caption = "#DatosdeMiercoles")+
     transition_manual(anio) +
     enter_fade()+
