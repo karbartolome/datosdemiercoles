@@ -1,4 +1,4 @@
-# % exportado por país y países hispanoaméricanos
+# Exportaciones Argentinas al mundo - Segmentado por países hispanoaméricanos a los que exporta y qué porcentaje de sus exportaciones totales van a cada país. 
 #______________________________________________________________________________________________
 # Extensión de: https://gitlab.com/gavg712/datos_de_miercoles_aportes/blob/master/R/20190501.R 
 # De @gavg712 
