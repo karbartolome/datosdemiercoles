@@ -1,4 +1,4 @@
-#Participaci髇 de mujeres en el parlamento - Serie Hist髍ica
+#Participaci贸n de mujeres en el parlamento - Serie Hist贸rica
 #install.packages("rvest")
 library(rvest)
 library(XML)
@@ -7,11 +7,31 @@ library(dplyr)
 library(ggpol)
 library(countrycode)
 library(gganimate)
+library(Rcurl)
 
 
-setwd("C:/Users/karin/Documents/Rstudio/Datos de Mi閞coles/DDM_Sem5/Base Parlamento")
+setwd("C:/Users/karin/Documents/Rstudio/Datos de Mi茅rcoles/DDM_Sem5/Base Parlamento")
 
-#Web scrapping de datos hist髍icos
+#Web scrapping de datos hist贸ricos
+#Generar los urls:
+url<-"http://archive.ipu.org/wmn-e/classif-arc.htm"
+url2<-getURL(url)
+parsed<-htmlParse(url2)
+links<-xpathSApply(parsed,path = "//a",xmlGetAttr,"href")
+links<-data.frame(link=matrix(unlist(links)), stringsAsFactors = F)
+
+right = function(text, num_char) {
+  substr(text, nchar(text) - (num_char-1), nchar(text))
+}
+
+links$right<-right(links,8)
+links$urlsenero<-substr(righturls,1,2)
+
+links <- links %>% filter(urlsenero=="01") %>% select(link)
+links$link <- right(links$link,17)
+
+#Es una forma posible pero no encuentra el link para 2002 porque en ese a帽o el link es con mes=Febrero
+
 urls<-c("http://archive.ipu.org/wmn-e/arc/classif010197.htm", 
         "http://archive.ipu.org/wmn-e/arc/classif250198.htm",
         "http://archive.ipu.org/wmn-e/arc/classif010199.htm",
@@ -41,7 +61,7 @@ datos<-data.frame(anios,urls)
 datos$urls <- as.character(datos$urls)
 
 
-#Armado de bases por a駉
+#Armado de bases por a帽o
 i=1
 for (i in 1:nrow(datos)) {
   parlamento<- datos$urls[i]
@@ -140,7 +160,7 @@ parlamento_serie<-rbind(p1997,
 
 
 #Analisis de los datos
-#Porcentaje de partipaci髇 femenina en el parlamento en pa韘es latinoam閞icanos
+#Porcentaje de partipaci贸n femenina en el parlamento en pa铆ses latinoam茅ricanos
 camara_baja <- parlamento_serie %>%
   select(-V1) %>%
   select(anio,
@@ -174,15 +194,15 @@ particip_continentes<- camara_baja_regiones %>%
   geom_boxplot()+
   labs(
     x = "Continente",
-    y = "Porcentaje de mujeres en c醡ara baja",
-    title = "Participaci髇 de mujeres en el parlamento (c醡ara baja o 鷑ica)",
-    subtitle = "A駉: {closest_state}"
+    y = "Porcentaje de mujeres en c谩mara baja",
+    title = "Participaci贸n de mujeres en el parlamento (c谩mara baja o 煤nica)",
+    subtitle = "A帽o: {closest_state}"
   ) +
   theme(
     legend.position = "none")+
   transition_states(anio)
 
-anim_save("Participaci髇 camara baja.gif",animation = particip_continentes, duration=12)
+anim_save("Participaci贸n camara baja.gif",animation = particip_continentes, duration=12)
 
 
 
