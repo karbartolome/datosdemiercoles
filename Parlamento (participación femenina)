@@ -9,9 +9,6 @@ library(countrycode)
 library(gganimate)
 library(Rcurl)
 
-
-setwd("C:/Users/karin/Documents/Rstudio/Datos de Miércoles/DDM_Sem5/Base Parlamento")
-
 #Web scrapping de datos históricos
 #Generar los urls:
 url<-"http://archive.ipu.org/wmn-e/classif-arc.htm"
