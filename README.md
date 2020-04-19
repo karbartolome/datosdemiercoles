@@ -1,7 +1,7 @@
 # datosdemiercoles
 
 El proyecto: 
-<a href=https://github.com/cienciadedatos/datos-de-miercoles</a>
+<a href=https://github.com/cienciadedatos/datos-de-miercoles </a>
 
 
 ## Algunas visualizaciones:
