@@ -6,7 +6,7 @@ El proyecto:
 
 ## Algunas visualizaciones:
 
-1. Rayshader para analizar terremotos:
+1. Rayshader para analizar ubicación de terremotos, en este caso es el terremoto de magnitud más fuerte registrado en Chile:
 
 <img src="https://github.com/karbartolome/datosdemiercoles/blob/master/visualizaciones/terremotos_rayshader.jpeg"></img>
 
